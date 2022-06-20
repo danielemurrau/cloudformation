@@ -28,11 +28,11 @@
                 },
                 "Protocol": "sqs",
                 "RawMessageDelivery": "true",
-                "FilterPolicy": {
-                    "buyer-class": [
-                        "vip"
-                    ]
-                }
+                #"FilterPolicy": {
+                #    "buyer-class": [
+                #        "vip"
+                #    ]
+                #}
             }
         },
         "SCMSubscription": {
