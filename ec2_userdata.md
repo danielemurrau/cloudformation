@@ -5,3 +5,9 @@ Scripts entered as user data are run as the root user, so do not use the sudo co
 #log of userdata script output can be found in:
 /var/log/cloud-init-output.log
 
+By default user data script runs only at first launch of the instance.
+
+If running script ai every reboot is needed then this proceudre can be followed:
+
+https://aws.amazon.com/premiumsupport/knowledge-center/execute-user-data-ec2/
+
