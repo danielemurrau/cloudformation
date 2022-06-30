@@ -7,7 +7,7 @@ Description: 'AWS CloudFormation Sample Template EC2InstanceWithSecurityGroupSam
   for the instance to give you SSH access. **WARNING** This template creates an Amazon
   EC2 instance. You will be billed for the AWS resources used if you create a stack
   from this template.'
-  Parameters:
+Parameters:
 
 myuser:
   Type: AWS::IAM::User
