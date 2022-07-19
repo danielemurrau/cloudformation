@@ -4,6 +4,7 @@ aws configure list-profiles
 
 2. Choose profile to use
 export AWS_PROFILE=profile_name
+export AWS_PROFILE=dmitp
 
 3. Check your current profile
 aws configure list
