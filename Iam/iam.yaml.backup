@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Metadata:
+  License: Apache-2.0
+Description: 'AWS CloudFormation Sample Template EC2InstanceWithSecurityGroupSample:
+  Create an Amazon EC2 instance running the Amazon Linux AMI. The AMI is chosen based
+  on the region in which the stack is run. This example creates an EC2 security group
+  for the instance to give you SSH access. **WARNING** This template creates an Amazon
+  EC2 instance. You will be billed for the AWS resources used if you create a stack
+  from this template.'
+Resources:
+  IAMU57OX9:
+    Type: 'AWS::IAM::User'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 67600da9-8324-4b09-8ef4-4bca059bf5f3
+  IAMAK3E1N4:
+    Type: 'AWS::IAM::AccessKey'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 46a05239-a94f-4fc4-a32b-1447b4aece51

@@ -1,19 +1,15 @@
-AWSTemplateFormatVersion: 2010-09-09
-Description: >-
-  AWS CloudFormation Sample Template VPC_Single_Instance_In_Subnet: Sample
-  template showing how to create a VPC and add an EC2 instance with an Elastic
-  IP address and a security group. **WARNING** This template creates an Amazon
-  EC2 instance. You will be billed for the AWS resources used if you create a
-  stack from this template.
-Parameters:
-
+AWSTemplateFormatVersion: '2010-09-09'
+Metadata:
+  License: Apache-2.0
+Description: 'Create IAM user'
 Resources:
-  myuser:
-    Type: AWS::IAM::User
+  IAMU57OX9:
+    Type: 'AWS::IAM::User'
+    Properties: {}
+    
+  IAMAK3E1N4:
+    Type: 'AWS::IAM::AccessKey'
     Properties:
-    Path: "/"
-  myaccesskey:
-    Type: AWS::IAM::AccessKey
-    Properties:
-    UserName:
-      !Ref myuser
+      UserName:
+        !Ref IAMU57OX9
+    
