@@ -17,4 +17,4 @@ aws cloudformation deploy \
         --capabilities CAPABILITY_NAMED_IAM \
         --stack-name ec2-code-deploy \
         --template-file ec2.yaml \
-        --paramter-override "KeyName=dmitp"
+        --parameter-override "KeyName=dmitp"
