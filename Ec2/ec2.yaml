@@ -50,6 +50,8 @@ Resources:
         Value: "test"
       - Key: "Name"
         Value: "dmitp"
+      IamInstanceProfile: !Ref DemoInstanceProfile
+
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -59,6 +61,16 @@ Resources:
         FromPort: 22
         ToPort: 22
         CidrIp: !Ref 'SSHLocation'
+
+  DemoInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      InstanceProfileName: demo-ec2-instance-profile
+      Path: /
+      Roles: 
+        - session_manager
+
+
 Outputs:
   InstanceId:
     Description: InstanceId of the newly created EC2 instance
