@@ -1,0 +1,185 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  DataPowerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Datapower
+      GroupName: Datapower   
+      VpcId: vpc-0a49f0422b77cf6e7
+      SecurityGroupIngress:
+        -
+          IpProtocol: tcp
+          FromPort: 9090
+          ToPort: 9090
+          CidrIp: 195.78.206.64/26
+        -
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 195.78.206.64/26
+        -
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 195.78.206.64/26  
+        -
+          IpProtocol: "icmp"         
+          FromPort: -1
+          ToPort: -1
+          Description: "Allow ICMP traffic"
+          CidrIp: "195.78.206.64/26"
+        - 
+          IpProtocol: tcp
+          FromPort: 161
+          ToPort: 162
+          Description: "Allow SNMP traffic"
+          CidrIp: 195.78.206.64/26
+        -  
+          IpProtocol: tcp
+          FromPort: 10443
+          ToPort: 10443
+          Description: "Allow 10443 traffic"
+          CidrIp: 195.78.206.64/26
+
+          IpProtocol: tcp
+          FromPort: 9090
+          ToPort: 9090
+          CidrIp: 77.43.32.32/29
+        -
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 77.43.32.32/29
+        -
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 77.43.32.32/29
+        -
+          IpProtocol: "icmp"
+          FromPort: -1
+          ToPort: -1
+          Description: "Allow ICMP traffic"
+          CidrIp: "77.43.32.32/29"
+        -
+          IpProtocol: tcp
+          FromPort: 161
+          ToPort: 162
+          Description: "Allow SNMP traffic"
+          CidrIp: 77.43.32.32/29
+        -
+          IpProtocol: tcp
+          FromPort: 10443
+          ToPort: 10443
+          Description: "Allow 10443 traffic"
+          CidrIp: 77.43.32.32/29
+
+        -
+          IpProtocol: tcp
+          FromPort: 9090
+          ToPort: 9090
+          CidrIp: 10.66.224.0/24
+        -
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.66.224.0/24
+        -
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 10.66.224.0/24
+        -
+          IpProtocol: "icmp"
+          FromPort: -1
+          ToPort: -1
+          Description: "Allow ICMP traffic"
+          CidrIp: "10.66.224.0/24"
+        -
+          IpProtocol: tcp
+          FromPort: 161
+          ToPort: 162
+          Description: "Allow SNMP traffic"
+          CidrIp: 10.66.224.0/24
+        -
+          IpProtocol: tcp
+          FromPort: 10443
+          ToPort: 10443
+          Description: "Allow 10443 traffic"
+          CidrIp: 10.66.224.0/24
+
+        -
+          IpProtocol: tcp
+          FromPort: 9090
+          ToPort: 9090
+          CidrIp: 80.74.184.0/26
+        -
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 80.74.184.0/26
+        -
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 80.74.184.0/26
+        -
+          IpProtocol: "icmp"
+          FromPort: -1
+          ToPort: -1
+          Description: "Allow ICMP traffic"
+          CidrIp: "80.74.184.0/26"
+        -
+          IpProtocol: tcp
+          FromPort: 161
+          ToPort: 162
+          Description: "Allow SNMP traffic"
+          CidrIp: 80.74.184.0/26
+        -
+          IpProtocol: tcp
+          FromPort: 10443
+          ToPort: 10443
+          Description: "Allow 10443 traffic"
+          CidrIp: 80.74.184.0/26
+        -
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 185.60.96.223/32
+        -
+          IpProtocol: "icmp"
+          FromPort: -1
+          ToPort: -1
+          Description: "Allow ICMP traffic"
+          CidrIp: "185.60.96.223/32"
+
+        -
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 185.60.97.223/32
+        -
+          IpProtocol: "icmp"
+          FromPort: -1
+          ToPort: -1
+          Description: "Allow ICMP traffic"
+          CidrIp: "185.60.97.223/32"
+
+        -
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 80.74.186.150/32
+        -
+          IpProtocol: "icmp"
+          FromPort: -1
+          ToPort: -1
+          Description: "Allow ICMP traffic"
+          CidrIp: "80.74.186.150/32"
+
+        - 
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 213.82.153.130/32
+

@@ -1,0 +1,13 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "ssm:StartSession",
+            "Resource": [
+                "arn:aws:ec2:eu-west-1:548775524928:instance/i-02331d4fdd0beb570",
+                "arn:aws:ssm:*:*:document/AWS-StartSSHSession"
+            ]
+        }
+    ]
+}
