@@ -18,8 +18,3 @@ aws cloudformation deploy \
         --stack-name snsfanout \
         --template-file sns.yaml \
         --parameter-override myHttpEndpoint="https://webhook.site/c6e53df7-211f-4310-9eec-7a3bb6d96fe2"
-
-aws cloudformation deploy \
-        --capabilities CAPABILITY_NAMED_IAM \
-        --stack-name  swp-vgi-il-2-DP-Sec-Group \
-        --template-file swp-vgi-il-2-DP-Sec-Group.yaml
