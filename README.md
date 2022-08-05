@@ -1,4 +1,4 @@
-# aws cli
+# aws cli instruction
 1. Get list of AWS profiles:
 aws configure list-profiles
 
