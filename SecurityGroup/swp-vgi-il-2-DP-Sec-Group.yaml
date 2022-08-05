@@ -40,7 +40,7 @@ Resources:
           ToPort: 10443
           Description: "Allow 10443 traffic"
           CidrIp: 195.78.206.64/26
-
+        -
           IpProtocol: tcp
           FromPort: 9090
           ToPort: 9090
