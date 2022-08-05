@@ -5,7 +5,7 @@
             "Effect": "Allow",
             "Action": "ssm:StartSession",
             "Resource": [
-                "arn:aws:ec2:eu-west-1:548775524928:instance/i-02331d4fdd0beb570",
+                "arn:aws:ec2:eu-west-1:ACCOUNT:instance/i-INSTANCENUMBER",
                 "arn:aws:ssm:*:*:document/AWS-StartSSHSession"
             ]
         }
