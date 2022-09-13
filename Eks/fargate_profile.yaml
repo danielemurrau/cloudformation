@@ -1,0 +1,9 @@
+- name: fp-eks-sample-app
+  podExecutionRoleARN: arn:aws:iam::205667778537:role/eksctl-dmitp-cluster-clust-FargatePodExecutionRole-1U2DLOKNNIIUM
+  selectors:
+  - namespace: eks-sample-app
+  status: ACTIVE
+  subnets:
+  - subnet-0a7dec500d544d833
+  - subnet-07771e037bd2590bc
+  - subnet-0a61c7f9aa3a18c43
