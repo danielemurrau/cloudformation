@@ -16,5 +16,5 @@ export AWS_REGION=eu-central-1
 
 aws cloudformation deploy \
         --capabilities CAPABILITY_NAMED_IAM \
-        --stack-name  swp-vgi-il-2-DP-Sec-Group \
-        --template-file swp-vgi-il-2-DP-Sec-Group.yaml
+        --stack-name  dmitp-DP-Sec-Groupp \
+        --template-file dmitp-DP-Sec-Group.yaml
