@@ -1,0 +1,123 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Provisions API Gateway resources to expose the API Layer EKS microservices.
+
+Parameters:
+  Env:
+    Type: String
+    Description: Select the environment on which you are deploying the stack.
+    Default: dev
+    AllowedValues:
+      - dev
+      - test
+      - prod
+      - test
+  VPC:
+    Type: String
+    Default: vpc-f09e7c89
+  VpcBlock: 
+    Type: String
+    Default: 172.31.0.0/16
+  SubnetList: 
+    #Description: 'Enter the DB Subnet Group from your desired VPC where instance is being lauched'
+    Description: 'Enter the DB Subnets for DB Subnet Group'
+    Type: 'CommaDelimitedList'
+    Default: 'subnet-b4eeb2d2,subnet-f3eac5bb,subnet-58a03902'  
+
+Resources:
+
+  ApiLayerRest:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub "${AWS::StackName}-API"
+      Description: API Proxy
+      EndpointConfiguration:
+        Types:
+          - PRIVATE
+        VpcEndpointIds:
+          - !Ref VpcEndpoint
+      Policy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action: execute-api:Invoke
+            Resource: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*"
+            Condition:
+              StringNotEquals:
+                "aws:sourceVpce": !Ref VpcEndpoint
+          - Effect: Allow
+            Principal: "*"
+            Action: execute-api:Invoke
+            Resource: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*"
+
+  ApiLayerLeadResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiLayerRest.RootResourceId
+      PathPart: "proxy"
+      RestApiId: !Ref ApiLayerRest
+
+  ApiLayerLeadProxyResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref ApiLayerLeadResource
+      PathPart: "{proxy+}"
+      RestApiId: !Ref ApiLayerRest
+
+  ApiLayerLeadResourceANY:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: ANY
+      RequestParameters:
+        method.request.path.proxy: true
+      Integration:
+        ConnectionType: INTERNET
+        IntegrationHttpMethod: ANY
+        RequestParameters:
+          "integration.request.path.proxy": "method.request.path.proxy"
+        Type: HTTP_PROXY
+        Uri: !Sub "https://dcweb1.audi.com/{proxy}"
+      AuthorizationType: NONE
+      ResourceId: !Ref ApiLayerLeadProxyResource
+      RestApiId: !Ref ApiLayerRest
+
+  ApiLayerDefaultDeployment:
+    DependsOn:
+      - ApiLayerLeadResourceANY
+      - ApiLayerLeadResourceANY
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      Description: !Sub "${AWS::StackName} API Gateway default deployment"
+      RestApiId: !Ref ApiLayerRest
+      StageName: !Ref Env
+
+  VpcEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref VpcEndpointSG
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.execute-api
+      SubnetIds: !Ref SubnetList
+      VpcEndpointType: Interface
+      VpcId: 'vpc-f09e7c89'
+        #- !Ref VPC
+
+  VpcEndpointSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for the VPC Endpoint.
+      SecurityGroupEgress:
+        - CidrIp: '0.0.0.0/0'
+          IpProtocol: '-1'
+      SecurityGroupIngress:
+        - CidrIp: '172.31.0.0/16'
+            #- !Ref VpcBlock
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      Tags:
+        - Key: Name
+          Value: VpcEndpointSG
+      VpcId: 'vpc-f09e7c89'
+        #- !Ref VPC
