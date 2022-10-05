@@ -2,18 +2,16 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: Provisions API Gateway resources to expose the API Layer EKS microservices.
 
 Parameters:
+  Project:   
+    Description: project name
+    Type: String
+    Default: swp-vgi-il-2
   Env:
     Type: String
-    Description: Select the environment on which you are deploying the stack.
     Default: dev
-    AllowedValues:
-      - dev
-      - test
-      - prod
-      - test
   VPC:
     Type: String
-    Default: vpc-f09e7c89
+    Default: "vpc-f09e7c89"
   VpcBlock: 
     Type: String
     Default: 172.31.0.0/16
@@ -100,7 +98,8 @@ Resources:
       ServiceName: !Sub com.amazonaws.${AWS::Region}.execute-api
       SubnetIds: !Ref SubnetList
       VpcEndpointType: Interface
-      VpcId: 'vpc-f09e7c89'
+      VpcId: !Ref VPC
+      #VpcId: 'vpc-f09e7c89'
         #- !Ref VPC
 
   VpcEndpointSG:
@@ -111,13 +110,11 @@ Resources:
         - CidrIp: '0.0.0.0/0'
           IpProtocol: '-1'
       SecurityGroupIngress:
-        - CidrIp: '172.31.0.0/16'
-            #- !Ref VpcBlock
+        - CidrIp: !Ref VpcBlock
           FromPort: 443
           IpProtocol: tcp
           ToPort: 443
       Tags:
         - Key: Name
           Value: VpcEndpointSG
-      VpcId: 'vpc-f09e7c89'
-        #- !Ref VPC
+      VpcId: !Ref VPC
