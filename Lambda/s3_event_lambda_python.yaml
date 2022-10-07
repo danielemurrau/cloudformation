@@ -1,0 +1,95 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Bucket name
+
+Resources:
+  LambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code:
+        ZipFile: |
+          import json
+          import urllib.parse
+          import boto3
+
+          print('Loading function')
+
+          s3 = boto3.client('s3')
+
+
+          def lambda_handler(event, context):
+          #print("Received event: " + json.dumps(event, indent=2))
+
+          # Get the object from the event and show its content type
+              bucket = event['Records'][0]['s3']['bucket']['name']
+              key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
+              try:
+                  response = s3.get_object(Bucket=bucket, Key=key)
+                  print("CONTENT TYPE: " + response['ContentType'])
+                  return response['ContentType']
+              except Exception as e:
+                  print(e)
+                  print('Error getting object {} from bucket {}. Make sure they exist and your bucket is in the same region as this function.'.format(key, bucket))
+                  raise e
+                
+              
+          
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: LambdaFunctionRolePolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: "*"
+
+
+  # Create our S3 bucket, pre-configured to invoke our Lambda.
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    DependsOn:
+    - LambdaFunctionS3Permission
+    Properties:
+      BucketName: !Ref BucketName
+      NotificationConfiguration:
+        LambdaConfigurations:
+        - Event: 's3:ObjectCreated:*'
+          Function: !GetAtt LambdaFunction.Arn
+
+  # Allows S3 to call our Lambda function.
+  LambdaFunctionS3Permission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref LambdaFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub arn:aws:s3:::${BucketName}
+      #  !Join
+      #  - ''
+      #  - - 'arn:'
+      #    - Ref: AWS::Partition
+      #    - ':s3:::'
+      #    - !Ref BucketName
