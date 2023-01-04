@@ -1,0 +1,244 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EventBridge CloudFormation Nested Template
+
+Parameters:
+
+  Project:   
+    Description: project name
+    Type: String
+    Default: swp-vgi-il-2
+  Wltpfrif752JobName:
+    Description: Wltpfrif752 job name
+    Type: String
+    Default: Wltpfrif752
+  
+  SqsQueueName:
+    Description: coda per task schedulati
+    Type: String
+    Default: scheduled-tasks
+    
+  Env:
+    Type: String
+  
+Mappings:
+  EventBridgeSQSMap:
+    'eb-sqs-batch-stack':
+      url: https://shared-swp-vgi-il-2-nestedstacks.s3.eu-central-1.amazonaws.com/eventbridge-sqs-jobs.yml
+    'eb-sqs':
+      url: https://shared-swp-vgi-il-2-nestedstacks.s3.eu-central-1.amazonaws.com/eventbridge-sqs-jobs-scheduled-maintenance.yml
+
+Resources:
+
+  Wltpfrif752EventBridge:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "Wltpfrif752"
+        ScheduleExpression: " cron(0/30 22-5 * * ? *)" 
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs-batch-stack', url]
+
+  IvaEventBridge:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "swpIva"
+        ScheduleExpression: " rate(15 minutes)"         
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs-batch-stack', url]
+
+
+  TrattamentiFiscaliEventBridge:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "swpTrattamentiFiscali"
+        ScheduleExpression: " rate(15 minutes)"         
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs-batch-stack', url]  
+
+  HostImportEventBridge:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "host-import"
+        ScheduleExpression: " rate(15 minutes)"         
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs-batch-stack', url]
+
+  Gm66ImportEventBridge:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "gm66-import"
+        ScheduleExpression: " rate(15 minutes)"         
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs-batch-stack', url]
+
+  DmsImportEventBridge:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "dms-import"
+        ScheduleExpression: " rate(15 minutes)"         
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs-batch-stack', url]
+
+  # ScheduledTasksEventBridge:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties: 
+  #     Parameters: 
+  #       Project: !Ref Project 
+  #       JobName: "scheduled-tasks"
+  #       ScheduleExpression: " cron(0 7 * * ? *)"  
+  #       ActionType: "folder-check-deadline"       
+  #       Env: !Ref Env
+  #     TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs-batch-stack', url]
+
+  SchedulerAgendaEventBridge:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: SqsQueue
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "scheduler-folder"
+        ScheduleExpression: " cron(0 7 * * ? *)"
+        ActionType: "folder-check-deadline"
+        SqsQueueName: !Ref SqsQueueName
+        SqsQueueArn: !GetAtt SqsQueue.Arn
+        SqsDlqArn: !GetAtt DlqQueue.Arn         
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs', url]
+
+  SchedulerAgendaEventBridge:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "scheduler-agenda"
+        ScheduleExpression: " cron(0 19 * * ? *)"  
+        ActionType: "agenda-change-status"       
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs-batch-stack', url]
+
+  FollowupNotificationEventBridge:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "scheduler-followup-notification"
+        ScheduleExpression: " rate(60 minutes)"
+        ActionType: "followup-notification"       
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs-batch-stack', url]
+
+  TestFollowupNotificationEventBridge:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: SqsQueue
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "Testscheduler-followup-notification"
+        ScheduleExpression: " rate(60 minutes)"
+        ActionType: "followup-notification"
+        SqsQueueName: !Ref SqsQueueName
+        SqsQueueArn: !GetAtt SqsQueue.Arn
+        SqsDlqArn: !GetAtt DlqQueue.Arn         
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs', url]
+
+  DanieleEventBridge:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: SqsQueue
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "Daniele-scheduler"
+        ScheduleExpression: " rate(60 minutes)"
+        ActionType: "followup-notification"
+        SqsQueueName: !Ref SqsQueueName
+        SqsQueueArn: !GetAtt SqsQueue.Arn
+        SqsDlqArn: !GetAtt DlqQueue.Arn         
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs', url]
+
+  DanieleTwoEventBridge:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: SqsQueue
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "DanieleTwo-scheduler"
+        ScheduleExpression: " rate(60 minutes)"
+        ActionType: "followup-notification"
+        SqsQueueName: !Ref SqsQueueName
+        SqsQueueArn: !GetAtt SqsQueue.Arn
+        SqsDlqArn: !GetAtt DlqQueue.Arn         
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs', url]
+
+  TwoNotificationEventBridge:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      Parameters: 
+        Project: !Ref Project 
+        JobName: "Two-scheduler-followup-notification"
+        ScheduleExpression: " rate(60 minutes)"
+        ActionType: "followup-notification"       
+        Env: !Ref Env
+      TemplateURL: !FindInMap [EventBridgeSQSMap, 'eb-sqs-batch-stack', url] 
+
+  SqsQueue:
+    Type: AWS::SQS::Queue
+    DependsOn: DlqQueue
+    Properties:
+      QueueName: !Sub ${Env}-${Project}-${SqsQueueName} 
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DlqQueue.Arn
+        maxReceiveCount: 3
+      VisibilityTimeout: 15
+      Tags:
+      - Key: Name
+        Value: !Sub ${Env}-${Project}-${SqsQueueName}
+      - Key: Environment
+        Value: !Ref Env
+
+  DlqQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${Env}-${Project}-${SqsQueueName}-dlq
+      Tags:
+      - Key: Name
+        Value: !Sub ${Env}-${Project}-${SqsQueueName}-dlq
+      - Key: Environment
+        Value: !Ref Env
+
+  SqsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Id: !Sub "${Env}-${Project}-${SqsQueueName}-pol"
+        Version: '2012-10-17'
+        Statement:
+        - Sid: Allow-Owner
+          Effect: Allow
+          Principal:
+            AWS: 
+              - !Sub "${AWS::AccountId}"
+            Service: "events.amazonaws.com"  
+          Action:
+            - "sqs:DeleteMessage"
+            - "sqs:GetQueueUrl"
+            - "sqs:ListQueues"
+            - "sqs:ChangeMessageVisibility"
+            - "sqs:ReceiveMessage"
+            - "sqs:SendMessage"
+          Resource: !GetAtt SqsQueue.Arn
+      Queues:
+      - !Ref SqsQueue

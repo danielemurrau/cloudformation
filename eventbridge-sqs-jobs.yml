@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EventBridge CloudFormation Nested Template
+
+Parameters:
+
+  Project:   
+    Description: project name
+    Type: String
+    Default: swp-vgi-il-2
+  JobName:   
+    Description: job name
+    Type: String
+  ScheduleExpression:
+    Description: The scheduling expression.
+    Type: String
+  ActionType:    
+    Description: action type.
+    Type: String
+    Default: "import-data"
+
+
+  Env:
+    Type: String
+#"cron(0 12 * * ? *)"
+# rate(15 minutes)
+Resources:
+
+  ScheduledRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: !Sub ${Project}-${Env}-${JobName}-cwe
+      Description: !Sub Scheduler for job ${JobName}
+      ScheduleExpression: !Ref ScheduleExpression
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt SqsQueue.Arn
+          Id: !Ref JobName
+          Input: !Sub '{"context": "${JobName}" ,"actionType": "${ActionType}"}'
+          RetryPolicy:
+            MaximumRetryAttempts: 3
+            MaximumEventAgeInSeconds: 300
+          DeadLetterConfig:
+            Arn: !GetAtt DlqQueue.Arn
+
+  SqsQueue:
+    Type: AWS::SQS::Queue
+    DependsOn: DlqQueue
+    Properties:
+      QueueName: !Sub ${Env}-${Project}-${JobName} 
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DlqQueue.Arn
+        maxReceiveCount: 3
+      VisibilityTimeout: 15
+      Tags:
+      - Key: Name
+        Value: !Sub ${Env}-${Project}-${JobName}
+      - Key: Environment
+        Value: !Ref Env
+
+  DlqQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${Env}-${Project}-${JobName}-dlq
+      Tags:
+      - Key: Name
+        Value: !Sub ${Env}-${Project}-${JobName}-dlq
+      - Key: Environment
+        Value: !Ref Env
+
+  SqsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Id: !Sub "${Env}-${Project}--${JobName}-pol"
+        Version: '2012-10-17'
+        Statement:
+        - Sid: Allow-Owner
+          Effect: Allow
+          Principal:
+            AWS: 
+              - !Sub "${AWS::AccountId}"
+            Service: "events.amazonaws.com"  
+          Action:
+            - "sqs:DeleteMessage"
+            - "sqs:GetQueueUrl"
+            - "sqs:ListQueues"
+            - "sqs:ChangeMessageVisibility"
+            - "sqs:ReceiveMessage"
+            - "sqs:SendMessage"
+          Resource: !GetAtt SqsQueue.Arn
+      Queues:
+      - !Ref SqsQueue
